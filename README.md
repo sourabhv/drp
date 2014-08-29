@@ -1,4 +1,4 @@
-Dropper
--------
+Drop_boxer
+----------
 
-Dropper is a command line tool for Dropbox to ease upload, download of files and get public URLs
+Drop_boxer is a command line tool for Dropbox to ease upload, download of files and get public URLs
