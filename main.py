@@ -42,6 +42,7 @@ def log(msg):
 
 
 ### Commands
+#TODO: use argparse for use flags/options
 
 def drp_ls():
     """list files/folders in current directory(default:root)"""
@@ -55,23 +56,28 @@ def drp_tree():
     """show file structure of current directory"""
     pass
 
-def drp_bulk_upload(*files):
+def drp_upload(*files, dest_path):
     """upload file(s) to current directory or destination path.
 
     > drp up file1 file2 file3 -d [dest_path]
-
     Usage:
       drp up testfile
       drp up testfile -d DropBox/sampleFolder/newfile
     """
-    #TODO: add destination parameters
+    # TODO: add destination parameters
 
-    log("Preparing file for upload ...")
+    # update path with slash 
+    if dest_path[-1] != '/':
+        dest_path += '/'
+
+    log("Preparing file(s) for upload ...")
+    log("Uploading file(s) ...")
+
     for filename in files:
         with open(filename) as f:
-            response = client.put_file(filename, f, overwrite=True)
-            log("Uploading file ...")
+            response = client.put_file(dest_path+filename, f, overwrite=False,)
     print('Uploaded:\n', response)
+    log("---------------------------------------------")
 
 def drp_download():
     """download file(s) to current directory or destination_path.
@@ -81,7 +87,9 @@ def drp_download():
       drp down testfile
       drp down testfile -d Desktop/newfile
     """
-    #f, metadata = client.get_file_and_metadata('./the_source.py')
+    log("Preparing file(s) for download ...")
+
+    f, metadata = client.get_file_and_metadata('./the_source.py')
     #out = open('sample.py', 'wb')
     #out.write(f.read())
     #out.close()
@@ -91,7 +99,7 @@ def drp_download():
 def drp_rm():
     pass
 
-def drp_share():
+def drp_share_file():
     """copy public URL of source_file_path to clipboard"""
     pass
 
