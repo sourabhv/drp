@@ -7,14 +7,12 @@ Requirements
 ------------
 
 - Python (Duh!)
- ```
- pip install dropbox
-```
-or direct download at [Dropbox Python SDK](https://www.dropbox.com/developers/core/sdks/python)
+- `pip install dropbox`
+or [Dropbox Python SDK](https://www.dropbox.com/developers/core/sdks/python)
 
 
 Command Usage
------------------
+--------------
 
 ```
 $ drp                                    # show help
@@ -27,6 +25,7 @@ $ drp mkdir folder                       # creae a new directory
 $ drp rm file                            # delete file or directory
 $ drp share file                         # copy public URL to clipboard
 $ drp info file                          # retrieve metadata for file/folder
+```
 
 License
 -------
