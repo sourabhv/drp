@@ -23,13 +23,13 @@ Command Usage
 
 ```
 $ drp                                    # show help
-$ drp up file1 file2 -d [path]           # upload files
-$ drp down file1 file2 -d [path]         # download files
+$ drp init                               # initialize the dropboxer
+$ drp [-p path] up file1 file2           # upload files
+$ drp [-p path] down file1 file2         # download files
 $ drp ls [path]                          # list files
-$ drp cd [path]                          # change current working directory
 $ drp tree [path]                        # show file structure
 $ drp mkdir folder                       # creae a new directory
-$ drp rm file                            # delete file or directory
+$ drp rm file                            # delete file or empty directory
 $ drp share file                         # copy public URL to clipboard
 $ drp info file                          # retrieve metadata for file/folder
 ```
@@ -37,7 +37,7 @@ $ drp info file                          # retrieve metadata for file/folder
 Todos
 -----
 
-* Store `access_token` in a local file.
+* ~~Store `access_token` in a local file.~~ `access_token` will be stored in ENVVARS
 * Add search function
 * Extend with parallel uploads and downloads
 * Use compression for file transfer (gzip)
@@ -46,4 +46,4 @@ Todos
 License
 -------
 
-Drop_boxer is released under the [GNU GPL License v3](http://www.gnu.org/licenses/quick-guide-gplv3.html).
+DropBoxer is released under the [GNU GPL License v3](http://www.gnu.org/licenses/quick-guide-gplv3.html).
