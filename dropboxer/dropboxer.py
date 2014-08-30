@@ -36,8 +36,12 @@ def up(path, files):
 @click.argument('files', nargs=-1)
 def down(path, files):
     '''Recursively download files/folders to "path" or current directory'''
-    for x in files:
-        click.echo('Will download %s to %s' % (x, path))
+    handler = DropboxerHandler()
+    failed_files = handler.download(path, files)
+
+    click.echo('Failed File(s):')
+    for filename, err in failed_files:
+        click.echo('-> %s [%s] %s' % (filename, err[1:4], err[8:-1]))
 
 
 @cli.command()

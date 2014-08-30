@@ -45,9 +45,9 @@ class DropboxerHandler(object):
             echo('Error: %s' % str(e))
 
     def upload(self, path, files):
-        """upload file(s) to given path or app's root.
+        """Upload file(s) to given path or app's root.
 
-        $ drp up [-p path] file1 file2 file3
+        $ drp up [-p path] file[ file[ file[...]]]
         Usage:
         drp up testfile
         drp up -d DropBox/sampleFolder/newfiles testfile
@@ -59,13 +59,38 @@ class DropboxerHandler(object):
         path = '/' + path.strip('/') + '/'
 
         for filename in files:
-            with open(filename) as f:
-                response = self.client.put_file(path + filename, f)
-                upfilename = str(dict(response)['path']).split('/')[-1]
-                uploaded_files.append([filename, upfilename])
+            try:
+                with open(filename) as f:
+                    response = self.client.put_file(path + filename, f)
+                    upfilename = str(dict(response)['path']).split('/')[-1]
+                    uploaded_files.append([filename, upfilename])
+            except IOError as e:
+                echo(str(e))
 
         return uploaded_files
 
+
+    def download(self, path, files):
+        """Download file(s) to current directory or destination_path.
+
+        > drp down [-p path] file[ file[ file[...]]]
+        Usage:
+        drp down testfile
+        drp down -p ../newfile testfile
+        """
+
+        failed_files = []
+
+        for file in files:
+            try:
+                filename = file.split('/')[-1]
+                out = open(os.path.join(path, filename), 'wb')
+                with self.client.get_file(file) as f:
+                    out.write(f.read())
+                out.close()
+            except dropbox.rest.ErrorResponse as e:
+                failed_files.append([file, str(e)])
+        return failed_files
 
 def drp_ls(path):
     """list files/folders in current directory(default:root)"""
@@ -90,24 +115,6 @@ def drp_tree():
     pass
 
 
-def drp_download(path, *files):
-    """download file(s) to current directory or destination_path.
-
-    > drp down file1 file2 file3 -d [path]
-    Usage:
-    drp down testfile
-    drp down testfile -d Desktop/newfile
-    """
-    log("Preparing file(s) for download ...")
-
-    for filename in files:
-        with open(filename) as f:
-            f, metadata = client.get_file_and_metadata(current_path + '/' + filename)
-    output = open(os.path.expanduser(to_path), 'wb')
-    output.write(f.read())
-    output.close()
-    print('\n\nDownloaded: \n', metadata.get('size'))
-    log("---------------------------------------------")
 
 
 def drp_rm(filename):
