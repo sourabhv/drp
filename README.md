@@ -3,6 +3,14 @@ Drop_Boxer
 
 Drop_Boxer is a command line tool for Dropbox to ease upload, download of files and get public URLs.
 
+Installation
+------------
+
+```
+$ wget http://goo.gl/yS0X9B
+$ chmod +x main.py
+
+```
 Requirements
 ------------
 
@@ -26,6 +34,13 @@ $ drp rm file                            # delete file or directory
 $ drp share file                         # copy public URL to clipboard
 $ drp info file                          # retrieve metadata for file/folder
 ```
+
+### Todos
+* Store `access_token` in a local file.
+* Add search function
+* Extend with parallel uploads and downloads
+* Use compression for file transfer (gzip)
+* Set multi-threaded transfer for large uploads/downloads
 
 License
 -------
