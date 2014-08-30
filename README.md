@@ -9,7 +9,6 @@ Installation
 ```
 $ wget http://goo.gl/yS0X9B
 $ chmod +x main.py
-
 ```
 Requirements
 ------------
@@ -35,7 +34,9 @@ $ drp share file                         # copy public URL to clipboard
 $ drp info file                          # retrieve metadata for file/folder
 ```
 
-### Todos
+Todos
+-----
+
 * Store `access_token` in a local file.
 * Add search function
 * Extend with parallel uploads and downloads

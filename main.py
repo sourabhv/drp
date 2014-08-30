@@ -131,6 +131,14 @@ def drp_fileinfo(path):
     file_metadata = client.metadata(path)
     print('\n\nMetadata:\n', file_metadata)
 
+def drp_search(q):
+    """Search Dropbox for filenames containing the given string."""
+    results = self.api_client.search(self.current_path, q)
+    log("searching ... ")
+    log("Here are the search results ... ")
+    for r in results:
+        print("%s\n" % r['path'])
+
 
 def main():
     if APP_KEY == '' or APP_SECRET == '':
