@@ -122,7 +122,7 @@ def drp_mkdir(foldername):
 
 def drp_share_file(filename):
     """copy public URL of source_file_path to clipboard"""
-    log("Here is your URL: ")
+    log("Here's your URL: ")
     print api_client.share(filename, short_url=True)['url']
     # TODO: copy to clipboard
 

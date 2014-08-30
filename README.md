@@ -7,13 +7,28 @@ Requirements
 ------------
 
 - Python (Duh!)
-- [Dropbox Python SDK](https://www.dropbox.com/developers/core/sdks/python)
+ ```
+ pip install dropbox
+```
+or direct download at [Dropbox Python SDK](https://www.dropbox.com/developers/core/sdks/python)
 
-Possible Commands
+
+Command Usage
 -----------------
 
-- `drop_boxer up source_file [dest_path]`: Upload *source_file* to App's root/*dest_path*
-- `drop_boxer ls [path]`: List all files/folders in root/given *path*
-- `drop_boxer tree [path]`: Show the file tree structure of root/given *path*
-- `drop_boxer down source_file_path [dest_path]`: Download the *source_file_path* into current directory or *dest_path*
-- `dropboxer share source_file_path`: Copy the public URL of *source_file_path* in clipboard
+```
+$ drp                                    # show help
+$ drp up file1 file2 -d [path]           # upload files
+$ drp down file1 file2 -d [path]         # download files
+$ drp ls [path]                          # list files
+$ drp cd [path]                          # change current working directory
+$ drp tree [path]                        # show file structure
+$ drp mkdir folder                       # creae a new directory
+$ drp rm file                            # delete file or directory
+$ drp share file                         # copy public URL to clipboard
+$ drp info file                          # retrieve metadata for file/folder
+
+License
+-------
+
+Drop_boxer is released under the MIT license.
