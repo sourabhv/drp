@@ -1,7 +1,7 @@
-Drop_Boxer
+DropBoxer
 ==========
 
-Drop_Boxer is a command line tool for Dropbox to ease upload, download of files and get public URLs.
+DropBoxer is a command line tool for Dropbox to ease upload, download of files and get public URLs.
 
 Installation
 ------------
@@ -16,7 +16,7 @@ Requirements
 - Python (Duh!)
 - `pip install dropbox`
 or [Dropbox Python SDK](https://www.dropbox.com/developers/core/sdks/python)
-
+- `pip install click` (for CLI interface)
 
 Command Usage
 --------------
@@ -46,4 +46,4 @@ Todos
 License
 -------
 
-Drop_boxer is released under the MIT license.
+Drop_boxer is released under the [GNU GPL License v3](http://www.gnu.org/licenses/quick-guide-gplv3.html).

@@ -33,18 +33,11 @@ def get_access():
     except rest.ErrorResponse, e:
         print('Error: %s\n' % str(e))
         return
-    print('Recieved access_token: %s\n User_id: %s\n', % (access_token
-                                                          user_id))
+    print('Recieved access_token: %s\n User_id: %s\n' % (access_token, user_id))
     # enable client access
     with open(TOKEN_FILE, 'w') as f:
         f.write('oauth2:' + access_token)
     api_client = dropbox.client.DropboxClient(access_token)
-
-
-def log(msg):
-    """print to screen."""
-    print msg
-
 
 # Commands
 # TODO: use argparse for flags/options
@@ -72,7 +65,7 @@ def drp_tree():
     pass
 
 
-def drp_upload(*files, path):
+def drp_upload(path, *files):
     """upload file(s) to current directory or destination path.
 
     > drp up file1 file2 file3 -d [path]
@@ -95,7 +88,7 @@ def drp_upload(*files, path):
     log("---------------------------------------------")
 
 
-def drp_download(*files, to_path):
+def drp_download(path, *files):
     """download file(s) to current directory or destination_path.
 
     > drp down file1 file2 file3 -d [path]
