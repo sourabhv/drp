@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-# encoding: utf-8
+# Encoding: utf-8
 
 import os
 import sys
+
 import dropbox
 
 # keys are set in virtualenv's postactivate script
@@ -11,11 +12,11 @@ app_secret = os.environ.get('APP_SECRET')
 access_token = os.environ.get('ACCESS_TOKEN')
 user_id = os.environ.get('USER_ID')
 
-
 # __init__
 TOKEN_FILE = "token_store.txt"
 api_client = None
 current_path = ''
+
 
 def get_access():
     """Get access token and enable client access."""
@@ -32,9 +33,9 @@ def get_access():
     except rest.ErrorResponse, e:
         print('Error: %s\n' % str(e))
         return
-    print('Recieved access_token: %s\n User_id: %s\n', %s(access_token
+    print('Recieved access_token: %s\n User_id: %s\n', % (access_token
                                                           user_id))
-    ### enable client access
+    # enable client access
     with open(TOKEN_FILE, 'w') as f:
         f.write('oauth2:' + access_token)
     api_client = dropbox.client.DropboxClient(access_token)
@@ -45,8 +46,8 @@ def log(msg):
     print msg
 
 
-### Commands
-#TODO: use argparse for flags/options
+# Commands
+# TODO: use argparse for flags/options
 
 def drp_ls(path):
     """list files/folders in current directory(default:root)"""
@@ -56,6 +57,7 @@ def drp_ls(path):
             name = os.path.basename(f['path'])
             encoding = locale.getdefaultlocale()[1]
             print(('%s\n' % name).encode(encoding))
+
 
 def drp_cd(path):
     """navigate inside the directories."""
@@ -69,6 +71,7 @@ def drp_tree():
     """show file structure of current directory"""
     pass
 
+
 def drp_upload(*files, path):
     """upload file(s) to current directory or destination path.
 
@@ -79,7 +82,7 @@ def drp_upload(*files, path):
     """
     # TODO: add destination parameters
 
-    # update path with slash 
+    # update path with slash
     if path[-1] != '/':
         path += '/'
 
@@ -90,6 +93,7 @@ def drp_upload(*files, path):
             response = client.put_file(path+filename, f, overwrite=False,)
     print('Uploaded:\n', response.get('size'))
     log("---------------------------------------------")
+
 
 def drp_download(*files, to_path):
     """download file(s) to current directory or destination_path.
@@ -103,22 +107,25 @@ def drp_download(*files, to_path):
 
     for filename in files:
         with open(filename) as f:
-        f, metadata = client.get_file_and_metadata(current_path + '/' + filename)
+            f, metadata = client.get_file_and_metadata(current_path + '/' + filename)
     output = open(os.path.expanduser(to_path), 'wb')
     output.write(f.read())
     output.close()
     print('\n\nDownloaded: \n', metadata.get('size'))
     log("---------------------------------------------")
 
+
 def drp_rm(filename):
     """delete a file or directory"""
     api_client.file_delete(current_path + "/" + filename)
     log("Removed")
 
+
 def drp_mkdir(foldername):
     """create a new directory"""
     api_client.file_create_folder(current_path + "/" + foldername)
     log("Directory created.")
+
 
 def drp_share_file(filename):
     """copy public URL of source_file_path to clipboard"""
@@ -126,10 +133,12 @@ def drp_share_file(filename):
     print api_client.share(filename, short_url=True)['url']
     # TODO: copy to clipboard
 
+
 def drp_fileinfo(path):
     """Retrieve metadata for a file or folder."""
     file_metadata = client.metadata(path)
     print('\n\nMetadata:\n', file_metadata)
+
 
 def drp_search(q):
     """Search Dropbox for filenames containing the given string."""
@@ -144,6 +153,7 @@ def main():
     if APP_KEY == '' or APP_SECRET == '':
         exit("You need to set your APP_KEY and APP_SECRET!")
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()
