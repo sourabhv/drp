@@ -1,5 +1,5 @@
 import click
-import handler
+from handler import DropboxerHandler
 
 
 @click.group()
@@ -13,7 +13,7 @@ def cli():
 @cli.command()
 def init():
     '''Initialize the DropBoxer by getting Dropbox access token'''
-    pass
+    handler = DropboxerHandler(forceinit=True)
 
 
 @cli.command()
@@ -22,8 +22,11 @@ def init():
 @click.argument('files', nargs=-1)
 def up(path, files):
     '''Recursively upload files/folders to "path" or DropBoxer App folder'''
-    for x in files:
-        click.echo('Will upload %s to %s' % (x, path))
+    handler = DropboxerHandler()
+    uploaded_files = handler.upload(path, files)
+    for src, dst in uploaded_files:
+        if src != dst:
+            click.echo('Uploaded %s as %s' %(src, dst))
 
 
 @cli.command()

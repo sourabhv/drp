@@ -4,43 +4,68 @@
 import os
 import sys
 
+from click import echo, prompt, confirm
 import dropbox
 
-# keys are set in virtualenv's postactivate script
-app_key = os.environ.get('APP_KEY')
-app_secret = os.environ.get('APP_SECRET')
-access_token = os.environ.get('ACCESS_TOKEN')
-user_id = os.environ.get('USER_ID')
 
-# __init__
-TOKEN_FILE = "token_store.txt"
-api_client = None
-current_path = ''
+class DropboxerHandler(object):
 
+    # access_token is set in env vars
+    access_token = os.environ.get('ACCESS_TOKEN')
 
-def get_access():
-    """Get access token and enable client access."""
+    def __init__(self, forceinit=False):
+        if forceinit or not self.access_token:
+            self.initApp(forceinit=forceinit)
+        else:
+            self.client = dropbox.client.DropboxClient(self.access_token)
 
-    flow = dropbox.client.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
-    authorize_url = flow.start()
-    print '1. Go to: ' + authorize_url
-    print '2. Click "Allow" (you might have to log in first)'
-    print '3. Copy the authorization code.'
-    code = raw_input("Enter the authorization code here: ").strip()
+    def initApp(self, forceinit):
+        """Get access token and enable client access."""
 
-    try:
-        access_token, user_id = flow.finish(code)
-    except rest.ErrorResponse, e:
-        print('Error: %s\n' % str(e))
-        return
-    print('Recieved access_token: %s\n User_id: %s\n' % (access_token, user_id))
-    # enable client access
-    with open(TOKEN_FILE, 'w') as f:
-        f.write('oauth2:' + access_token)
-    api_client = dropbox.client.DropboxClient(access_token)
+        confirm_str = 'One access token already exists, get a new one?'
+        if self.access_token and forceinit:
+            if not confirm(confirm_str):
+                return
 
-# Commands
-# TODO: use argparse for flags/options
+        app_key = prompt('Enter your app key')
+        app_secret = prompt('Enter your app secret')
+        flow = dropbox.client.DropboxOAuth2FlowNoRedirect(app_key, app_secret)
+        authorize_url = flow.start()
+        echo('1. Go to: ' + authorize_url)
+        echo('2. Click "Allow" (you might have to log in first)')
+        echo('3. Copy the authorization code.')
+        code = prompt("Enter the authorization code").strip()
+
+        try:
+            access_token, user_id = flow.finish(code)
+            echo('Recieved access_token: %s\n User_id: %s\n'
+                 % (access_token, user_id))
+            echo('Add access_token value to your environment variables')
+        except dropbox.rest.ErrorResponse as e:
+            echo('Error: %s' % str(e))
+
+    def upload(self, path, files):
+        """upload file(s) to given path or app's root.
+
+        $ drp up [-p path] file1 file2 file3
+        Usage:
+        drp up testfile
+        drp up -d DropBox/sampleFolder/newfiles testfile
+        """
+
+        uploaded_files = []
+
+        # fix path
+        path = '/' + path.strip('/') + '/'
+
+        for filename in files:
+            with open(filename) as f:
+                response = self.client.put_file(path + filename, f)
+                upfilename = str(dict(response)['path']).split('/')[-1]
+                uploaded_files.append([filename, upfilename])
+
+        return uploaded_files
+
 
 def drp_ls(path):
     """list files/folders in current directory(default:root)"""
@@ -63,29 +88,6 @@ def drp_cd(path):
 def drp_tree():
     """show file structure of current directory"""
     pass
-
-
-def drp_upload(path, *files):
-    """upload file(s) to current directory or destination path.
-
-    > drp up file1 file2 file3 -d [path]
-    Usage:
-    drp up testfile
-    drp up testfile -d DropBox/sampleFolder/newfile
-    """
-    # TODO: add destination parameters
-
-    # update path with slash
-    if path[-1] != '/':
-        path += '/'
-
-    log("Preparing file(s) for upload ...")
-    log("Uploading file(s) ...")
-    for filename in files:
-        with open(filename) as f:
-            response = client.put_file(path+filename, f, overwrite=False,)
-    print('Uploaded:\n', response.get('size'))
-    log("---------------------------------------------")
 
 
 def drp_download(path, *files):
