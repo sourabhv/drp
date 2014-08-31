@@ -32,6 +32,7 @@ $ drp mkdir folder                       # creae a new directory
 $ drp rm file                            # delete file or empty directory
 $ drp share file                         # copy public URL to clipboard
 $ drp info file                          # retrieve metadata for file/folder
+$ drp search [-p path] query             # Search for files/folders containing the given string
 ```
 
 Todos

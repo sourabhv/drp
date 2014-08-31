@@ -20,7 +20,9 @@ class DropboxerHandler(object):
             self.client = dropbox.client.DropboxClient(self.access_token)
 
     def initApp(self, forceinit):
-        """Get access token and enable client access."""
+        '''Get access token and enable client access
+
+        returns None'''
 
         confirm_str = 'One access token already exists, get a new one?'
         if self.access_token and forceinit:
@@ -45,13 +47,10 @@ class DropboxerHandler(object):
             echo('Error: %s' % str(e))
 
     def upload(self, path, files):
-        """Upload file(s) to given path or app's root.
+        '''Upload file(s) to given path (default: root directory).
 
-        $ drp up [-p path] file[ file[ file[...]]]
-        Usage:
-        drp up testfile
-        drp up -d DropBox/sampleFolder/newfiles testfile
-        """
+        returns a list of pairs filename and its filename on dropbox
+        '''
 
         uploaded_files = []
 
@@ -71,19 +70,16 @@ class DropboxerHandler(object):
 
 
     def download(self, path, files):
-        """Download file(s) to current directory or destination_path.
+        '''Download file(s) to given path (default: current directory).
 
-        > drp down [-p path] file[ file[ file[...]]]
-        Usage:
-        drp down testfile
-        drp down -p ../newfile testfile
-        """
+        return list of failed files and the error string
+        '''
 
         failed_files = []
 
         for file in files:
             try:
-                filename = file.split('/')[-1]
+                filename = os.path.basename(file)
                 out = open(os.path.join(path, filename), 'wb')
                 with self.client.get_file(file) as f:
                     out.write(f.read())
@@ -92,70 +88,97 @@ class DropboxerHandler(object):
                 failed_files.append([file, str(e)])
         return failed_files
 
-def drp_ls(path):
-    """list files/folders in current directory(default:root)"""
-    response = api_client.metadata(current_path)
-    if 'contents' in response:
-        for f in response['contents']:
-            name = os.path.basename(f['path'])
-            encoding = locale.getdefaultlocale()[1]
-            print(('%s\n' % name).encode(encoding))
+    def ls(self, path):
+        '''List files/folders in given path (default: root directory)
+
+        returns 2 lists - files and folders
+        '''
+
+        files, folders = [], []
+
+        try:
+            response = self.client.metadata(path)
+        except dropbox.rest.ErrorResponse as e:
+            echo(str(e))
+        else:
+            if 'contents' in response:
+                for item in response['contents']:
+                    name = os.path.basename(item['path'])
+                    if item['is_dir']:
+                        folders.append(name)
+                    else:
+                        files.append(name)
+        finally:
+            return files, folders
 
 
-def drp_cd(path):
-    """navigate inside the directories."""
-    if path == "..":
-        current_path = "/".join(current_path.split("/")[0:-1])
-    else:
-        current_path += "/" + path
+    def tree(self, path):
+        '''Show file tree structure of given path (default: root directory)
+
+        return None
+        '''
+
+        pass
 
 
-def drp_tree():
-    """show file structure of current directory"""
-    pass
+    def mkdir(self, path):
+        '''Create a new directories under given path
+
+        returns None'''
+
+        try:
+            self.client.file_create_folder(path)
+        except dropbox.rest.ErrorResponse as e:
+            echo(e)
 
 
+    def rm(self, name):
+        '''Delete a file or a non-empty directory
+
+        returns True if deleted successfully, False otherwise'''
+
+        meta = self.info(name)
+        if meta and meta['is_dir'] and meta['contents']:
+            echo('Cannot delete a non-empty directory')
+            return False
+        else:
+            self.client.file_delete(name)
+            return True
 
 
-def drp_rm(filename):
-    """delete a file or directory"""
-    api_client.file_delete(current_path + "/" + filename)
-    log("Removed")
+    def share(self, path):
+        '''Create a public URL of file/filer of given path
+
+        returns dict with URL if succeeds, None otherwise'''
+
+        try:
+            return self.client.share(path, short_url=True)
+        except dropbox.rest.ErrorResponse as e:
+            echo(str(e))
 
 
-def drp_mkdir(foldername):
-    """create a new directory"""
-    api_client.file_create_folder(current_path + "/" + foldername)
-    log("Directory created.")
+    def info(self, path):
+        '''Retrieve metadata for a file or folder
+
+        returns metadata dictionary'''
+        try:
+            return self.client.metadata(path)
+        except dropbox.rest.ErrorResponse as e:
+            echo(str(e))
 
 
-def drp_share_file(filename):
-    """copy public URL of source_file_path to clipboard"""
-    log("Here's your URL: ")
-    print api_client.share(filename, short_url=True)['url']
-    # TODO: copy to clipboard
-
-
-def drp_fileinfo(path):
-    """Retrieve metadata for a file or folder."""
-    file_metadata = client.metadata(path)
-    print('\n\nMetadata:\n', file_metadata)
-
-
-def drp_search(q):
-    """Search Dropbox for filenames containing the given string."""
-    results = self.api_client.search(self.current_path, q)
-    log("searching ... ")
-    log("Here are the search results ... ")
-    for r in results:
-        print("%s\n" % r['path'])
-
-
-def main():
-    if APP_KEY == '' or APP_SECRET == '':
-        exit("You need to set your APP_KEY and APP_SECRET!")
-    sys.exit(0)
-
-
-if __name__ == '__main__':
-    main()
+    def search(path, query):
+        '''Search Dropbox for files/folders containing the given string'''
+        files, folders = [], []
+        try:
+            response = self.client.search(path, query)
+        except dropbox.rest.ErrorResponse as e:
+            echo(str(e))
+        else:
+            for item in response:
+                if item['is_dir']:
+                    folders.append(item['path'])
+                else:
+                    files.append(item['path'])
+        finally:
+            return files, folders
