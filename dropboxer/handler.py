@@ -3,6 +3,7 @@
 
 import os
 import sys
+import urllib2
 
 from click import echo, prompt, confirm
 import dropbox
@@ -14,6 +15,13 @@ class DropboxerHandler(object):
     access_token = os.environ.get('ACCESS_TOKEN')
 
     def __init__(self, forceinit=False):
+        # check if internet connection is available
+        try:
+            response = urllib2.urlopen('http://74.125.228.100', timeout=1)
+        except urllib2.URLError as e:
+            echo('No internet connection available. Exiting ...')
+            sys.exit(0)
+
         if forceinit or not self.access_token:
             self.initApp(forceinit=forceinit)
         else:
@@ -46,7 +54,7 @@ class DropboxerHandler(object):
         except dropbox.rest.ErrorResponse as e:
             echo('Error: %s' % str(e))
 
-    def upload(self, path, files):
+    def up(self, path, files):
         '''Upload file(s) to given path (default: root directory).
 
         returns a list of pairs filename and its filename on dropbox
@@ -60,16 +68,15 @@ class DropboxerHandler(object):
         for filename in files:
             try:
                 with open(filename) as f:
-                    response = self.client.put_file(path + filename, f)
-                    upfilename = str(dict(response)['path']).split('/')[-1]
+                    response = dict(self.client.put_file(path + filename, f))
+                    upfilename = os.path.basename(response['path'])
                     uploaded_files.append([filename, upfilename])
             except IOError as e:
                 echo(str(e))
 
         return uploaded_files
 
-
-    def download(self, path, files):
+    def down(self, path, files):
         '''Download file(s) to given path (default: current directory).
 
         return list of failed files and the error string
@@ -111,7 +118,6 @@ class DropboxerHandler(object):
         finally:
             return files, folders
 
-
     def tree(self, path):
         '''Show file tree structure of given path (default: root directory)
 
@@ -119,7 +125,6 @@ class DropboxerHandler(object):
         '''
 
         pass
-
 
     def mkdir(self, path):
         '''Create a new directories under given path
@@ -130,7 +135,6 @@ class DropboxerHandler(object):
             self.client.file_create_folder(path)
         except dropbox.rest.ErrorResponse as e:
             echo(e)
-
 
     def rm(self, name):
         '''Delete a file or a non-empty directory
@@ -145,7 +149,6 @@ class DropboxerHandler(object):
             self.client.file_delete(name)
             return True
 
-
     def share(self, path):
         '''Create a public URL of file/filer of given path
 
@@ -156,7 +159,6 @@ class DropboxerHandler(object):
         except dropbox.rest.ErrorResponse as e:
             echo(str(e))
 
-
     def info(self, path):
         '''Retrieve metadata for a file or folder
 
@@ -165,7 +167,6 @@ class DropboxerHandler(object):
             return self.client.metadata(path)
         except dropbox.rest.ErrorResponse as e:
             echo(str(e))
-
 
     def search(path, query):
         '''Search Dropbox for files/folders containing the given string'''

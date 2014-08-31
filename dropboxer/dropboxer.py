@@ -8,7 +8,6 @@ def cli():
     '''drp is a DropBoxer command. DropBoxer is a command line tool
     for Dropbox to ease upload, download of files and get public URLs.
     '''
-
     pass
 
 
@@ -27,10 +26,10 @@ def up(path, files):
     '''Recursively upload files/folders to "path" or DropBoxer App folder'''
 
     handler = DropboxerHandler()
-    uploaded_files = handler.upload(path, files)
+    uploaded_files = handler.up(path, files)
     for src, dst in uploaded_files:
         if src != dst:
-            echo('Uploaded %s as %s' %(src, dst))
+            echo('Uploaded %s as %s' % (src, dst))
 
 
 @cli.command()
@@ -42,7 +41,7 @@ def down(path, files):
     '''Recursively download files/folders to "path" or current directory'''
 
     handler = DropboxerHandler()
-    failed_files = handler.download(path, files)
+    failed_files = handler.down(path, files)
 
     echo('Failed File(s):')
     for filename, err in failed_files:
@@ -93,6 +92,7 @@ def rm(path):
     if success:
         echo('%s deleted succesfully' % (path,))
 
+
 @cli.command()
 @click.argument('path', nargs=1, type=click.Path(), required=True)
 def share(path):
@@ -103,6 +103,7 @@ def share(path):
     if response:
         echo('Public URL: %s' % (response['url'],))
 
+
 @cli.command()
 @click.argument('path', nargs=1, type=click.Path(), required=True)
 def info(path):
@@ -112,6 +113,7 @@ def info(path):
     info = handler.info(path)
     if info:
         echo(info)
+
 
 @cli.command()
 @click.option('--path', '-p', default='/', type=click.Path(),
