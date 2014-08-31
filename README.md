@@ -7,9 +7,12 @@ Installation
 ------------
 
 ```
-$ wget http://goo.gl/yS0X9B
-$ chmod +x main.py
+$ wget goo.gl/OAgiUG -O drp
+$ wget goo.gl/fHhDxS -O handler.py
+$ chmod +x drp
+$ mv drp handler.py /usr/bin/
 ```
+
 Requirements
 ------------
 

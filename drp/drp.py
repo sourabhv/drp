@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# Encoding: utf-8
+
 import click
 from click import echo
 from handler import DrpHandler
