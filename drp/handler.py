@@ -136,18 +136,24 @@ class DrpHandler(object):
         except dropbox.rest.ErrorResponse as e:
             echo(e)
 
-    def rm(self, name):
-        '''Delete a file or a non-empty directory
+    def rm(self, paths):
+        '''Delete files or a non-empty directories
 
-        returns True if deleted successfully, False otherwise'''
+        returns list of paths not removed succesfully'''
 
-        meta = self.info(name)
-        if meta and meta['is_dir'] and meta['contents']:
-            echo('Cannot delete a non-empty directory')
-            return False
-        else:
-            self.client.file_delete(name)
-            return True
+        failed_paths = []
+
+        for path in paths:
+            meta = self.info(path)
+            if meta:
+                if meta['is_dir'] and meta['contents']:
+                    failed_paths.append([path, 'NonEmptyDirectory'])
+                else:
+                    self.client.file_delete(path)
+            else:
+                failed_paths.append([path, 'DoesNotExist'])
+
+        return failed_paths
 
     def share(self, path):
         '''Create a public URL of file/filer of given path
@@ -162,9 +168,12 @@ class DrpHandler(object):
     def info(self, path):
         '''Retrieve metadata for a file or folder
 
-        returns metadata dictionary'''
+        returns metadata dictionary if succeeds, else None'''
         try:
-            return self.client.metadata(path)
+            meta = self.client.metadata(path)
+            if meta.get('is_deleted', None):
+                return None
+            return meta
         except dropbox.rest.ErrorResponse as e:
             echo(str(e))
 

@@ -83,14 +83,14 @@ def mkdir(path):
 
 
 @cli.command()
-@click.argument('path', nargs=1, type=click.Path(), required=True)
+@click.argument('path', nargs=-1, type=click.Path(), required=True)
 def rm(path):
-    '''Remove a file or an empty directory under given directory'''
+    '''Remove files or an empty directories under given path'''
 
     handler = DrpHandler()
-    success = handler.rm(path)
-    if success:
-        echo('%s deleted succesfully' % (path,))
+    failed_paths = handler.rm(path)
+    for path, err in failed_paths:
+        echo('"%s" failed -> %s' % (path, err))
 
 
 @cli.command()
