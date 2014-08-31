@@ -1,7 +1,7 @@
-DropBoxer
-==========
+drp
+===
 
-DropBoxer is a command line tool for Dropbox to ease upload, download of files and get public URLs.
+Drp is a command line tool for Dropbox to ease upload, download of files and get public URLs.
 
 Installation
 ------------
@@ -23,7 +23,7 @@ Command Usage
 
 ```
 $ drp                                    # show help
-$ drp init                               # initialize the dropboxer
+$ drp init                               # initialize drp
 $ drp [-p path] up file1 file2           # upload files
 $ drp [-p path] down file1 file2         # download files
 $ drp ls [path]                          # list files
@@ -38,7 +38,6 @@ $ drp search [-p path] query             # Search for files/folders containing t
 Todos
 -----
 
-* ~~Store `access_token` in a local file.~~ `access_token` will be stored in ENVVARS
 * Add search function
 * Extend with parallel uploads and downloads
 * Use compression for file transfer (gzip)
@@ -47,4 +46,4 @@ Todos
 License
 -------
 
-DropBoxer is released under the [GNU GPL License v3](http://www.gnu.org/licenses/quick-guide-gplv3.html).
+Drp is released under the [GNU GPL License v3](http://www.gnu.org/licenses/quick-guide-gplv3.html).

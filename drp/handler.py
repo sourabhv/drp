@@ -9,7 +9,7 @@ from click import echo, prompt, confirm
 import dropbox
 
 
-class DropboxerHandler(object):
+class DrpHandler(object):
 
     # access_token is set in env vars
     access_token = os.environ.get('ACCESS_TOKEN')

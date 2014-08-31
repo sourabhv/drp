@@ -1,21 +1,21 @@
 import click
 from click import echo
-from handler import DropboxerHandler
+from handler import DrpHandler
 
 
 @click.group()
 def cli():
-    '''drp is a DropBoxer command. DropBoxer is a command line tool
-    for Dropbox to ease upload, download of files and get public URLs.
+    '''drp is a command line tool for Dropbox to ease upload,
+    download of files and get public URLs.
     '''
     pass
 
 
 @cli.command()
 def init():
-    '''Initialize the DropBoxer by getting Dropbox access token'''
+    '''Initialize drp by getting Dropbox access token'''
 
-    handler = DropboxerHandler(forceinit=True)
+    handler = DrpHandler(forceinit=True)
 
 
 @cli.command()
@@ -23,9 +23,9 @@ def init():
               help='Path where files will be uploaded')
 @click.argument('files', nargs=-1)
 def up(path, files):
-    '''Recursively upload files/folders to "path" or DropBoxer App folder'''
+    '''Recursively upload files/folders to "path" or drp App folder'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     uploaded_files = handler.up(path, files)
     for src, dst in uploaded_files:
         if src != dst:
@@ -40,7 +40,7 @@ def up(path, files):
 def down(path, files):
     '''Recursively download files/folders to "path" or current directory'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     failed_files = handler.down(path, files)
 
     echo('Failed File(s):')
@@ -54,7 +54,7 @@ def down(path, files):
 def ls(path):
     '''List files/folders in the "path" or current directory'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     files, folders = handler.ls(path)
     if folders:
         echo('Folders:')
@@ -78,7 +78,7 @@ def tree(path):
 def mkdir(path):
     '''Make a new directories under given path'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     handler.mkdir(path)
 
 
@@ -87,7 +87,7 @@ def mkdir(path):
 def rm(path):
     '''Remove a file or an empty directory under given directory'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     success = handler.rm(path)
     if success:
         echo('%s deleted succesfully' % (path,))
@@ -98,7 +98,7 @@ def rm(path):
 def share(path):
     '''Copy the public URL of the file to Clipboard'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     response = handler.share(path)
     if response:
         echo('Public URL: %s' % (response['url'],))
@@ -109,7 +109,7 @@ def share(path):
 def info(path):
     '''Retrieve metadata for file/folder'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     info = handler.info(path)
     if info:
         echo(info)
@@ -120,9 +120,9 @@ def info(path):
               help='The path to search within')
 @click.argument('query', nargs=1)
 def search(path, query):
-    '''Recursively upload files/folders to "path" or DropBoxer App folder'''
+    '''Recursively upload files/folders to "path" or drp App folder'''
 
-    handler = DropboxerHandler()
+    handler = DrpHandler()
     files, folders = handler.search(path, query)
     if folders:
         echo('Matching Folders:')

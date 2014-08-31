@@ -1,22 +1,34 @@
 from setuptools import setup
 
 setup(
-    name='DropBoxer',
+    name='Drp',
     version='1.0',
-    description='DropBoxer is a command line utility to ease upload, download and sharing of files',
-    long_description='''DropBoxer is Dropbox CLI tool which supports following:
-        Upload, Download, Delete, Share, List files/folders, Show file structure tree
-    DropBoxer works in its own App folder to decrease secutity risks, but please file a Github Issue if you wish DropBoxer to be able to access your DropBox root
+
+    description='Drp is a Dropbox command line utility to ease upload, download and sharing of files',
+    long_description='''Drp is Dropbox CLI tool which supports
+    Upload, Download, Delete, Share, List files/folders, Show file structure tree
+    Drp works in its own App folder (and not the Dropbox root) to decrease secutity risks.
     ''',
+
     author='Sourabh Verma',
     author_email='sourabh.coder@gmail.com',
-    py_modules=['dropboxer'],
+
+    license='GPLv3',
+    keywords='dropbox cli tool',
+    url='https://github.com/sourabhv/drp',
+    website='https://github.com/sourabhv/drp',
+
+    packages=[
+        'drp'
+    ],
+
     install_requires=[
         'dropbox',
         'click'
     ],
+
     entry_points='''
         [console_scripts]
-        drp=dropboxer.dropboxer:cli
+        drp=drp.drp:cli
     ''',
 )
