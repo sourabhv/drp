@@ -55,29 +55,43 @@ class DrpHandler(object):
             echo('Error: %s' % str(e))
 
     def up(self, path, files):
-        '''Upload file(s) to given path (default: root directory).
+        '''Recursively Upload file(s) to given path (default: root directory).
 
         returns a list of pairs filename and its filename on dropbox
         '''
 
-        uploaded_files = []
+        failed_files = []
 
         # fix path
-        path = '/' + path.strip('/') + '/'
+        # path = '/' + path.strip('/') + '/'
 
-        for filename in files:
-            try:
-                with open(filename) as f:
-                    response = dict(self.client.put_file(path + filename, f))
-                    upfilename = os.path.basename(response['path'])
-                    uploaded_files.append([filename, upfilename])
-            except IOError as e:
-                echo(str(e))
+        for file in files:
+            filename = os.path.basename(file)
+            if os.path.exists(file):
+                if os.path.isdir(file):
+                    status = self.mkdir(os.path.join(path, filename))
+                    if status[0]:
+                        newpath = os.path.join(path, filename)
+                        newfiles = os.listdir(file)
+                        newfiles = [os.path.join(file, x) for x in newfiles]
+                        new_failed_files = self.up(newpath, newfiles)
+                        failed_files.extend(new_failed_files)
+                    else:
+                        failed_files.append([file, status[1]])
+                else:
+                    try:
+                        with open(file, 'rb') as f:
+                            uppath = os.path.join(path, filename)
+                            self.client.put_file(uppath, f)
+                    except IOError as e:
+                        failed_files.append([file, str(e)])
+            else:
+                failed_files.append([file, 'DoesNotExist'])
 
-        return uploaded_files
+        return failed_files
 
     def down(self, path, files):
-        '''Download file(s) to given path (default: current directory).
+        '''Recursively Download file(s) to given path (default: current directory).
 
         return list of failed files and the error string
         '''
@@ -129,12 +143,13 @@ class DrpHandler(object):
     def mkdir(self, path):
         '''Create a new directories under given path
 
-        returns None'''
+        return True if succesful, else False'''
 
         try:
             self.client.file_create_folder(path)
+            return (True,)
         except dropbox.rest.ErrorResponse as e:
-            echo(e)
+            return False, e
 
     def rm(self, paths):
         '''Delete files or a non-empty directories

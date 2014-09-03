@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # Encoding: utf-8
 
+import pprint
+import os
+
 import click
 from click import echo
 from handler import DrpHandler
@@ -28,6 +31,7 @@ def init():
 def up(path, files):
     '''Recursively upload files/folders to "path" or drp App folder'''
 
+    files = [os.path.abspath(x) for x in files]
     handler = DrpHandler()
     uploaded_files = handler.up(path, files)
     for src, dst in uploaded_files:
@@ -82,7 +86,11 @@ def mkdir(path):
     '''Make a new directories under given path'''
 
     handler = DrpHandler()
-    handler.mkdir(path)
+    status = handler.mkdir(path)
+    if not status[0]:
+        s = str(status[1]).find('"')
+        e = str(status[1]).find('"', s + 1)
+        echo(str(status[1])[s+1:e])
 
 
 @cli.command()
@@ -115,7 +123,8 @@ def info(path):
     handler = DrpHandler()
     info = handler.info(path)
     if info:
-        echo(info)
+        pp = pprint.PrettyPrinter(indent=2, sort_keys=False)
+        echo(pp.pprint(info))
 
 
 @cli.command()
