@@ -83,7 +83,7 @@ class DrpHandler(object):
                     except IOError as e:
                         failed_files.append([file, str(e)])
             else:
-                failed_files.append([file, 'DoesNotExist'])
+                failed_files.append([file, 'Does not exist'])
 
         return failed_files
 
@@ -96,15 +96,33 @@ class DrpHandler(object):
         failed_files = []
 
         for file in files:
-            try:
-                filename = os.path.basename(file)
-                out = open(os.path.join(path, filename), 'wb')
-                with self.client.get_file(file) as f:
-                    out.write(f.read())
-                out.close()
-            except dropbox.rest.ErrorResponse as e:
-                failed_files.append([file, str(e)])
+            filename = os.path.basename(file)
+            meta = self.info(file)
+            if meta[0]:
+                meta = meta[1]
+                if meta['is_dir']:
+                    try:
+                        os.mkdir(os.path.join(path, filename))
+                        newpath = os.path.join(path, filename)
+                        newfiles = [x['path'] for x in meta['contents']]
+                        new_failed_files = self.down(newpath, newfiles)
+                        failed_files.extend(new_failed_files)
+                    except OSError:
+                        failed_files.append([file, 'Directory already exists'])
+                else:
+                    try:
+                        out = open(os.path.join(path, filename), 'wb')
+                        with self.client.get_file(file) as f:
+                            out.write(f.read())
+                        out.close()
+                    except dropbox.rest.ErrorResponse as err:
+                        err = self.prettyErr(str(err))
+                        failed_files.append([file, err])
+            else:
+                failed_files.append([file, 'Does not exist'])
+
         return failed_files
+
 
     def ls(self, path):
         '''List files/folders in given path (default: root directory)
@@ -146,9 +164,8 @@ class DrpHandler(object):
             self.client.file_create_folder(path)
             return (True,)
         except dropbox.rest.ErrorResponse as err:
-            s = str(err).find('"')
-            e = str(err).find('"', s + 1)
-            return False, str(err)[s+1:e]
+            err = self.prettyErr(str(err))
+            return False, err
 
     def rm(self, paths):
         '''Delete files or a non-empty directories
@@ -159,13 +176,13 @@ class DrpHandler(object):
 
         for path in paths:
             meta = self.info(path)
-            if meta:
-                if meta['is_dir'] and meta['contents']:
+            if meta[0]:
+                if meta[1]['is_dir'] and meta[1]['contents']:
                     failed_paths.append([path, 'NonEmptyDirectory'])
                 else:
                     self.client.file_delete(path)
             else:
-                failed_paths.append([path, 'DoesNotExist'])
+                failed_paths.append([path, 'Does not exist'])
 
         return failed_paths
 
@@ -185,13 +202,13 @@ class DrpHandler(object):
         returns metadata dictionary if succeeds, else None'''
         try:
             meta = self.client.metadata(path)
-            if meta.get('is_deleted', None):
-                return None
-            return meta
+            if not meta.get('is_deleted', None):
+                return True, meta
         except dropbox.rest.ErrorResponse as e:
-            echo(str(e))
+            pass
+        return (False,)
 
-    def search(path, query):
+    def search(self, path, query):
         '''Search Dropbox for files/folders containing the given string'''
         files, folders = [], []
         try:
@@ -206,3 +223,8 @@ class DrpHandler(object):
                     files.append(item['path'])
         finally:
             return files, folders
+
+    def prettyErr(self, str):
+        s = str.find('"') + 1
+        e = str.find('"', s)
+        return str[s:e]

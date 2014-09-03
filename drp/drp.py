@@ -33,8 +33,8 @@ def up(path, files):
 
     files = [os.path.abspath(x) for x in files]
     handler = DrpHandler()
-    uploaded_files = handler.up(path, files)
-    for name, err in uploaded_files:
+    failed_files = handler.up(path, files)
+    for name, err in failed_files:
         echo('Failed to upload %s | Error: %s' % (name, err))
 
 
@@ -49,9 +49,8 @@ def down(path, files):
     handler = DrpHandler()
     failed_files = handler.down(path, files)
 
-    echo('Failed File(s):')
-    for filename, err in failed_files:
-        echo('-> %s [%s] %s' % (filename, err[1:4], err[8:-1]))
+    for name, err in failed_files:
+        echo('Failed to download %s | Error: %s' % (name, err))
 
 
 @cli.command()
@@ -98,7 +97,7 @@ def rm(path):
     handler = DrpHandler()
     failed_paths = handler.rm(path)
     for path, err in failed_paths:
-        echo('"%s" failed -> %s' % (path, err))
+        echo('Failed to delete %s | Error: %s' % (path, err))
 
 
 @cli.command()
@@ -119,15 +118,15 @@ def info(path):
 
     handler = DrpHandler()
     info = handler.info(path)
-    if info:
-        pp = pprint.PrettyPrinter(indent=2, sort_keys=False)
-        echo(pp.pprint(info))
+    if info[0]:
+        pp = pprint.PrettyPrinter(indent=2)
+        echo(pp.pprint(info[1]))
 
 
 @cli.command()
 @click.option('--path', '-p', default='/', type=click.Path(),
               help='The path to search within')
-@click.argument('query', nargs=1)
+@click.argument('query', nargs=1, required=True)
 def search(path, query):
     '''Recursively upload files/folders to "path" or drp App folder'''
 
