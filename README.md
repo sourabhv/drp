@@ -7,11 +7,19 @@ Installation
 ------------
 
 ```
+$ pip install drp
+```
+
+Or alternatively you can do,
+
+```
 $ wget goo.gl/OAgiUG -O drp
 $ wget goo.gl/fHhDxS -O handler.py
 $ chmod +x drp
 $ mv drp handler.py /usr/bin/
 ```
+
+Note: This alternate method requires you to install Dropbox Python SDK and Click manually.
 
 Requirements
 ------------
@@ -41,7 +49,6 @@ $ drp search [-p path] query             # Search for files/folders containing t
 Todos
 -----
 
-* Add search function
 * Extend with parallel uploads and downloads
 * Use compression for file transfer (gzip)
 * Set multi-threaded transfer for large uploads/downloads
