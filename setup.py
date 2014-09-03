@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Drp',
-    version='1.0',
+    version='0.1',
 
     description='Drp is a Dropbox command line utility to ease upload, download and sharing of files',
     long_description='''Drp is Dropbox CLI tool which supports
