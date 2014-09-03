@@ -16,6 +16,7 @@ setup(
     license='GPLv3',
     keywords='dropbox cli tool',
     url='https://github.com/sourabhv/drp',
+    download_url='https://github.com/sourabhv/drp/archive/0.1.tar.gz',
     website='https://github.com/sourabhv/drp',
 
     packages=[
