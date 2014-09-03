@@ -62,9 +62,6 @@ class DrpHandler(object):
 
         failed_files = []
 
-        # fix path
-        # path = '/' + path.strip('/') + '/'
-
         for file in files:
             filename = os.path.basename(file)
             if os.path.exists(file):
@@ -148,8 +145,10 @@ class DrpHandler(object):
         try:
             self.client.file_create_folder(path)
             return (True,)
-        except dropbox.rest.ErrorResponse as e:
-            return False, e
+        except dropbox.rest.ErrorResponse as err:
+            s = str(err).find('"')
+            e = str(err).find('"', s + 1)
+            return False, str(err)[s+1:e]
 
     def rm(self, paths):
         '''Delete files or a non-empty directories

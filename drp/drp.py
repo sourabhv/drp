@@ -34,9 +34,8 @@ def up(path, files):
     files = [os.path.abspath(x) for x in files]
     handler = DrpHandler()
     uploaded_files = handler.up(path, files)
-    for src, dst in uploaded_files:
-        if src != dst:
-            echo('Uploaded %s as %s' % (src, dst))
+    for name, err in uploaded_files:
+        echo('Failed to upload %s | Error: %s' % (name, err))
 
 
 @cli.command()
@@ -88,9 +87,7 @@ def mkdir(path):
     handler = DrpHandler()
     status = handler.mkdir(path)
     if not status[0]:
-        s = str(status[1]).find('"')
-        e = str(status[1]).find('"', s + 1)
-        echo(str(status[1])[s+1:e])
+        echo(status[1])
 
 
 @cli.command()
