@@ -70,12 +70,18 @@ def ls(path):
 
 
 @cli.command()
+@click.option('--all', '-a', is_flag=True,
+              help='Show all files, including hidden files (starting with .)')
+@click.option('--depth', '-d', type=int, default=100,
+              help='Max display depth of the directory tree')
 @click.argument('path', nargs=1, type=click.Path(),
                 default='/', required=False)
-def tree(path):
+def tree(all, depth, path):
     '''Show file structure of "path" or current directory'''
 
-    echo('Show tree of %s' % path)
+    handler = DrpHandler()
+    fileCount, dirCount = handler.tree(path, max_depth=depth, show_hidden=all)
+    echo('\n%d directories, %d files' % (dirCount, fileCount))
 
 
 @cli.command()

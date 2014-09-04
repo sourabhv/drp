@@ -48,7 +48,7 @@ class DrpHandler(object):
 
         try:
             access_token, user_id = flow.finish(code)
-            echo('Recieved access_token: %s\n User_id: %s\n'
+            echo('Recieved access_token: %s\nUser_id: %s\n'
                  % (access_token, user_id))
             echo('Add access_token value to your environment variables')
         except dropbox.rest.ErrorResponse as e:
@@ -130,7 +130,7 @@ class DrpHandler(object):
         returns 2 lists - files and folders
         '''
 
-        files, folders = [], []
+        files, dirs = [], []
 
         try:
             response = self.client.metadata(path)
@@ -141,19 +141,49 @@ class DrpHandler(object):
                 for item in response['contents']:
                     name = os.path.basename(item['path'])
                     if item['is_dir']:
-                        folders.append(name)
+                        dirs.append(name)
                     else:
                         files.append(name)
         finally:
-            return files, folders
+            return (sorted(files, key=lambda s: s.lower()),
+                    sorted(dirs, key=lambda s: s.lower()))
 
-    def tree(self, path):
-        '''Show file tree structure of given path (default: root directory)
+    def tree(self, path, depth=1, max_depth=100, show_hidden=False,
+             pad_info=[]):
+        '''Print contents of directories in a tree-like format
+        By default, it prints upto a depth of 100 and doesn't print hidden
+        files, ie, files whose name begin with a '.'
 
-        return None
+        returns number of files, number of directories encountered
         '''
 
-        pass
+        files, dirs = self.ls(path)
+        if not show_hidden:
+            files = [x for x in files if not x.startswith('.')]
+            dirs = [x for x in dirs if not x.startswith('.')]
+        fileCount, dirCount = len(files), len(dirs)
+        dirs = [os.path.join(path, x) for x in dirs]
+
+        for i, file in enumerate(files):
+            padding = ['|   ' if x == 'nl' else '    ' for x in pad_info]
+            padding = ''.join(padding)
+            prefix = '`-- ' if i == len(files) - 1 and not dirs else '|-- '
+            echo('%s%s%s' % (padding, prefix, file))
+
+        for i, dir in enumerate(dirs):
+            padding = ['|   ' if x == 'nl' else '    ' for x in pad_info]
+            padding = ''.join(padding)
+            dirname = os.path.basename(dir)
+            prefix = '`-- ' if i == len(dirs) - 1 else '|-- '
+            echo('%s%s%s' % (padding, prefix, dirname))
+            new_pad_info = pad_info + (['l'] if i == len(dirs) - 1 else ['nl'])
+            fc, dc = self.tree(os.path.join(path, dirname), depth=depth+1,
+                          max_depth=max_depth, show_hidden=show_hidden,
+                          pad_info=new_pad_info)
+            fileCount += fc
+            dirCount += dc
+
+        return fileCount, dirCount
 
     def mkdir(self, path):
         '''Create a new directories under given path
