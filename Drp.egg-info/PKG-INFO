@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: Drp
+Version: 0.1.2
+Summary: Drp is a Dropbox command line utility to ease upload, download and sharing of files
+Home-page: https://github.com/sourabhv/drp
+Author: Sourabh Verma
+Author-email: sourabh.coder@gmail.com
+License: GPLv3
+Download-URL: https://github.com/sourabhv/drp/archive/0.1.2.tar.gz
+Description: Drp is Dropbox CLI tool which supports
+            Upload, Download, Delete, Share, List files/folders, Show file structure tree
+            Drp works in its own App folder (and not the Dropbox root) to decrease secutity risks.
+            
+Keywords: dropbox cli tool
+Platform: UNKNOWN

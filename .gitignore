@@ -4,5 +4,4 @@
 *.swp
 *.swo
 
-#egg files
-*.egg-info
+/dist
