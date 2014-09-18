@@ -10,6 +10,17 @@ setup(
     Drp works in its own App folder (and not the Dropbox root) to decrease secutity risks.
     ''',
 
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Natural Language :: English',
+        'Operating System :: Unix',
+        'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Topic :: Utilities',
+    ]
+
     author='Sourabh Verma',
     author_email='sourabh.coder@gmail.com',
 
