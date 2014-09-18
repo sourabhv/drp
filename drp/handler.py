@@ -21,6 +21,7 @@ class DrpHandler(object):
         except urllib2.URLError as e:
             echo('No internet connection available. Exiting ...')
             sys.exit(0)
+        # add socket.timeout instead of urllib2 test
 
         if forceinit or not self.access_token:
             self.initApp(forceinit=forceinit)

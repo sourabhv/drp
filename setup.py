@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='Drp',
-    version='0.1',
+    version='0.1.2',
 
     description='Drp is a Dropbox command line utility to ease upload, download and sharing of files',
     long_description='''Drp is Dropbox CLI tool which supports
@@ -16,7 +16,7 @@ setup(
     license='GPLv3',
     keywords='dropbox cli tool',
     url='https://github.com/sourabhv/drp',
-    download_url='https://github.com/sourabhv/drp/archive/0.1.tar.gz',
+    download_url='https://github.com/sourabhv/drp/archive/0.1.2.tar.gz',
     website='https://github.com/sourabhv/drp',
 
     packages=[
