@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Utilities',
-    ]
+    ],
 
     author='Sourabh Verma',
     author_email='sourabh.coder@gmail.com',
