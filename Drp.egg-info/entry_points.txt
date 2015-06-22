@@ -1,4 +1,0 @@
-
-        [console_scripts]
-        drp=drp.drp:cli
-    
